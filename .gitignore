@@ -1,14 +1,18 @@
-# Ignore everything by default
+# Ignore everything
 *
 
-# But don't ignore these files/folders:
+# But do not ignore these folders and their contents:
 !lib/
+!lib/**
+
 !assets/
+!assets/**
+
 !pubspec.yaml
 !pubspec.lock
 
-# Also don't ignore hidden .gitignore file
 !.gitignore
+
 
 
 
