@@ -2,25 +2,26 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:himmah_tracker/dummy_data/dummy_data.dart';
 import 'package:himmah_tracker/modules/user.dart';
 import 'package:himmah_tracker/screens/qr_screen.dart';
 import 'package:himmah_tracker/services/student_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:himmah_tracker/providers/app_providers.dart';
 final numberControler = TextEditingController();
 
 final passwordController = TextEditingController();
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   bool isLogingIn = false;
   @override
   Widget build(BuildContext context) {
@@ -130,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () async {
                         setState(() => isLogingIn = true);
                         try {
-                          await onLoginPressed(context);
+                          await onLoginPressed(context,ref);
                         } finally {
                           setState(() => isLogingIn = false);
                         }
@@ -239,7 +240,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-Future onLoginPressed(BuildContext context) async {
+Future onLoginPressed(BuildContext context, ref) async {
   final mobileNum = numberControler.text.trim();
   final password = passwordController.text;
   if (mobileNum.isEmpty || password.isEmpty) {
@@ -271,9 +272,9 @@ Future onLoginPressed(BuildContext context) async {
       final user = await StudentApi().getProfile();
 
       if (user != null) {
-        currentUser = user;
+        ref.read(currentUserProvider.notifier).state = user;
         final preferences = await SharedPreferences.getInstance();
-        String userJson = jsonEncode( currentUser.toJson());
+        String userJson = jsonEncode( user.toJson());
         await preferences.setString('current_user',userJson);
         debugPrint('[Login] ✅ User profile loaded successfully.');
         debugPrint('[Login] ➡️ Navigating to home screen...');
