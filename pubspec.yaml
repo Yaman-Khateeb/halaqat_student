@@ -1,0 +1,41 @@
+name: himmah_tracker
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # lints: ^3.0.0
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.2.1  
+  flutter_riverpod: ^2.6.1
+  qr_flutter: ^4.1.0
+  percent_indicator: ^4.2.5
+  intl: ^0.20.2
+  fl_chart: ^1.0.0
+  syncfusion_flutter_charts: ^29.2.7
+  smooth_page_indicator: ^1.2.1
+  http: ^1.4.0
+  flutter_dotenv: ^5.2.1
+  shared_preferences: ^2.5.3
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - .env
+    - assets/images/boy_book.png
+    - assets/images/boy_hello.png
+    - assets/images/noQuiz_boy.png
+    - assets/images/noTasks_boy.png
+    - assets/images/avatar.jpg
