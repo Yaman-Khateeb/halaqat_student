@@ -6,13 +6,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class CampaignsApi {
+  late final  int userID;
+  
   Future<List<Map<String, dynamic>>?> getCampaignsForStudentID(
     int studentID,
   ) async {
     print('Campaigns on progress . . . . .. . ♾️♾️♾️♾️');
     try {
       final baseUrl = dotenv.env['API_BASE_URL']!;
-      final url = Uri.parse('$baseUrl/campaigns/bystudent/${currentUser.id}');
+      final url = Uri.parse('$baseUrl/campaigns/bystudent/$studentID');
       final response = await http.get(
         url,
         headers: {'accept': 'application/json'},

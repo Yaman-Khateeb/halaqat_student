@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:himmah_tracker/dummy_data/dummy_data.dart';
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+import 'package:himmah_tracker/providers/app_providers.dart';
+class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
 
     @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final user = ref.watch(currentUserProvider);
     return  AppBar(
   backgroundColor: const Color(0xFFE5F3F5),
   leading: Builder(
@@ -20,7 +23,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     Row(
       children: [
         Text(
-          '${currentUser.firstName} ${currentUser.lastName}',
+          '${user!.firstName} ${user.lastName}',
           style: Theme.of(context).textTheme.bodyMedium, 
         ),
         const SizedBox(width: 10),
@@ -35,7 +38,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   ),
   child:  CircleAvatar(
     radius: 20,
-    backgroundImage: currentUser.image,
+    backgroundImage: user.image,
   ),
 ),
 

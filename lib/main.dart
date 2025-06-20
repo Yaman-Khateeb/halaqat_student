@@ -63,7 +63,7 @@ void main() async {
             '/tasks': (context) => const TasksScreen(),
             '/quiz': (context) => const QuizScreen(),
             '/campaigns': (context)=> const SelectCampaignScreen(),
-            
+             '/select-groups': (context) => const SelectGroupScreen(),  // <---- add this!
           },
           home:  LoginPage(),
           // Add error screen for initialization failures

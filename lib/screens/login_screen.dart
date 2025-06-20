@@ -23,6 +23,7 @@ class LoginPage extends ConsumerStatefulWidget {
 
 class _LoginPageState extends ConsumerState<LoginPage> {
   bool isLogingIn = false;
+  bool _hidePassword = true;
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -44,11 +45,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   const SizedBox(height: 32),
 
                   // Logo
-                  const CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.white,
-                    child: Text("Logo"), // Replace with your logo widget/image
-                  ),
+                   CircleAvatar(
+  radius: 80,
+  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+  child: ClipOval(
+    child: Image.asset(
+      'assets/images/mosqueIcon.png',
+      width: 150,
+      height: 150,
+      fit: BoxFit.cover,
+    ),
+  ),
+),
 
                   const SizedBox(height: 16),
 
@@ -81,6 +89,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       fillColor: Colors.white,
                       hintText: 'رقم الجوال',
                       prefixIcon: const Icon(Icons.person),
+                      suffixIcon: SizedBox( ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -94,16 +103,26 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   // Password TextField
                   TextField(
                     controller: passwordController,
-                    obscureText: true,
+                    obscureText: _hidePassword,
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
                       hintText: 'كلمة المرور',
                       prefixIcon: const Icon(Icons.lock),
+                      
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
                       ),
+                      suffixIcon: IconButton(
+                        icon:
+                         Icon( _hidePassword? Icons.visibility_off : Icons.visibility ,       color: Colors.grey.shade600,size: 22, ) ,                        
+                        onPressed: (){
+                          setState(() {
+                          _hidePassword = !_hidePassword;                            
+                          });
+                        },)
+                       
                     ),
                     textAlign: TextAlign.right,
                   ),

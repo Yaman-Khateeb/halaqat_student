@@ -6,7 +6,7 @@ import 'package:himmah_tracker/modules/tasks.dart';
 import 'package:himmah_tracker/modules/user.dart';
 
 
-late User currentUser;
+
 
 
 final attendanceData = [
