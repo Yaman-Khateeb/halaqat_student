@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:himmah_tracker/modules/reciteSession.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:himmah_tracker/dummy_data/dummy_data.dart';
 
@@ -9,11 +10,12 @@ class QuranChallengeChart extends StatelessWidget {
     super.key,
     required this.year,
     required this.month,
+    required this.reciteSessions
   });                                   
 
   final int year;
   final int month;
-
+  final List<ReciteSession> reciteSessions;
   @override
   Widget build(BuildContext context) {
     final challengesForMonth = quranChallenges
@@ -21,6 +23,16 @@ class QuranChallengeChart extends StatelessWidget {
             challenge.startDate.year <= year &&
             challenge.startDate.month <= month)
         .toList();
+
+
+       int sum = 0;
+    for(final session in reciteSessions)
+    {
+       print('${session.evaluationTitle}  ${session.pagesAmount} ${session.date}') ;
+       sum += session.pagesAmount;
+    }
+print('total pages: ${sum}');
+
 
     if (challengesForMonth.isEmpty) {
       return Padding(
@@ -53,7 +65,7 @@ class QuranChallengeChart extends StatelessWidget {
           session.date.year == year && 
           session.date.month == month 
           
-    ).length;
+    ).fold(0, (previousValue, element) => previousValue += element.pagesAmount,);
 
     final recitedPercentage =
         (recitedAmount / challenge.requiredAmount).clamp(0.0, 1.0);

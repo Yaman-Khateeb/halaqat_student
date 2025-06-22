@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:himmah_tracker/dummy_data/dummy_data.dart';
+
 import 'package:himmah_tracker/modules/reciteSession.dart';
+import 'package:himmah_tracker/services/recites_api.dart';
 import 'package:himmah_tracker/widgets/custom_app_bar.dart';
 import 'package:himmah_tracker/widgets/custom_bottom_navbar.dart';
 import 'package:himmah_tracker/widgets/custome_drawer.dart';
@@ -9,8 +10,9 @@ import 'package:himmah_tracker/widgets/quran/column_chart.dart';
 
 import 'package:himmah_tracker/widgets/quran/quran_challenge_chart.dart';
 import 'package:himmah_tracker/widgets/quran/recite_session.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -20,12 +22,52 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
     DateTime date = DateTime.now();
-    late List<ReciteSession> sessionsForMonth;
-    @override
-  void initState() {    
-    super.initState();    
-    sessionsForMonth = reciteSessions.where((session)=> session.date.year == date.year && session.date.month == date.month).toList();
-  } 
+    
+    List<ReciteSession> reciteSessions = [];
+    late final int campaignID, groupID;
+    
+    bool isLoading = true;
+
+   @override
+void initState() {
+  super.initState();
+  _initData(); // Call the async method
+}
+
+Future<void> _initData() async {
+  final pref = await SharedPreferences.getInstance();
+  campaignID = pref.getInt('campaign_id') ?? -1;
+  groupID = pref.getInt('group_id') ?? -1;
+
+  final sessionsMap = await ReciteSessionApi(campaignId: campaignID, studentId: groupID).getReciteSessions();
+  
+  if (sessionsMap != null) {
+   print( 'home:/ successfully got session: start page: ${ReciteSession.fromJson(sessionsMap[0]).start}');
+    setState(() {
+      reciteSessions = sessionsMap.map((reciteMap) => ReciteSession.fromJson(reciteMap)).toList();
+    });
+  } else {
+    setState(() {
+      reciteSessions = [];
+    });
+
+    
+  print('Recite sessions: $reciteSessions');
+  for(final recite in reciteSessions!)
+  {
+    print(' a recite:');
+    print('${recite.date} ${recite.pagesAmount}');
+  }
+  }
+
+
+  setState(() {
+      isLoading = false;
+    }    
+    );
+
+}
+
   final PageController _controller = PageController();
   
 //   final noRecitesContent =  Center(
@@ -54,6 +96,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
 @override
 Widget build(BuildContext context) {
+
+  if(isLoading)
+  {
+  return const Scaffold(
+    body: Center(child: CircularProgressIndicator(),),
+  );
+  }
+
+
   final bool isCurrentMonth = DateTime.now().month == date.month &&
                               DateTime.now().year == date.year;
 
@@ -104,7 +155,7 @@ Widget build(BuildContext context) {
               onMonthChanged: (newDate) {
                 setState(() {
                   date = DateTime(newDate.year, newDate.month);
-                  sessionsForMonth = reciteSessions
+                  reciteSessions = reciteSessions!
                       .where((session) =>
                           session.date.year == date.year &&
                           session.date.month == date.month)
@@ -121,6 +172,7 @@ Widget build(BuildContext context) {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Column(
                   children: [
+                    
                     SizedBox(
                       height: 350,
                       child: PageView.builder(
@@ -129,10 +181,12 @@ Widget build(BuildContext context) {
                         itemBuilder: (context, index) {
                           if (index == 0) {
                             return QuranWeeklyChart(
+                              reciteSessions: reciteSessions,
                                 year: date.year, month: date.month);
                           }
                           if (index == 1) {
                             return QuranChallengeChart(
+                              reciteSessions: reciteSessions,
                               year: date.year,
                               month: date.month,
                             );
@@ -156,7 +210,7 @@ Widget build(BuildContext context) {
               ),
             ),
             const SizedBox(height: 25),
-            (sessionsForMonth.isEmpty)
+            (reciteSessions!.isEmpty)
                 ? noRecitesContent
                 : Text(
                     ':جلسات تسميع القرآن الكريم للشهر الحالي',
@@ -166,9 +220,12 @@ Widget build(BuildContext context) {
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: sessionsForMonth.length,
-              itemBuilder: (context, index) =>
-                  ReciteSessionWidget(sessionsForMonth[index]),
+              itemCount: reciteSessions.length,
+              itemBuilder: (context, index) 
+              {
+                 print('recite session ${index} ${reciteSessions[index].pagesAmount}');
+                  return ReciteSessionWidget(reciteSessions[index]);
+              }
             ),
           ],
         ),

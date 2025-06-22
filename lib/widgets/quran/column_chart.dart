@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:himmah_tracker/modules/reciteSession.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:himmah_tracker/dummy_data/dummy_data.dart'; // contains reciteSessions
 
 class QuranWeeklyChart extends StatelessWidget {
-  const QuranWeeklyChart({super.key, required this.year, required this.month});
+  const QuranWeeklyChart({super.key, required this.year, required this.month, required this.reciteSessions});
 
   final int year;
   final int month;
@@ -11,6 +12,8 @@ class QuranWeeklyChart extends StatelessWidget {
   /// Generates data for the weekly chart. Groups recitations by week number.
   /// Returns a list of 4 elements, each containing the week number and the number
   /// of pages recited in that week.
+    final List<ReciteSession>reciteSessions; 
+    
   List<_WeeklyData> _generateWeeklyData() {
     final sessionsForMonth = reciteSessions.where((session) =>
         session.date.year == year && session.date.month == month).toList();
@@ -20,7 +23,7 @@ class QuranWeeklyChart extends StatelessWidget {
 
     for (final session in sessionsForMonth) {
       final int weekIndex = ((session.date.day - 1) ~/ 7).clamp(0, 3);
-      weeklyCounts[weekIndex]+= session.pagesAmount;
+      weeklyCounts[weekIndex] += (session.end - session.start + 1);
     }
 
       const List<String> weekName = [
@@ -35,6 +38,8 @@ class QuranWeeklyChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+
     final weeklyData = _generateWeeklyData();
 
     return Directionality(
